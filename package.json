@@ -1,0 +1,411 @@
+{
+  "name": "team",
+  "displayName": "Visual Studio Team Services",
+  "description": "Connect to Team Services, monitor your builds and manage your pull requests and work items for your source repositories",
+  "version": "1.113.0",
+  "publisher": "ms-vsts",
+  "icon": "assets/team.png",
+  "markdown": "standard",
+  "galleryBanner": {
+    "color": "#313131",
+    "theme": "dark"
+  },
+  "keywords": [
+    "Team Foundation Server",
+    "Team Services",
+    "Visual Studio Online",
+    "Visual Studio Team Services",
+    "VSTS"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/vsts-vscode.git"
+  },
+  "bugs": "https://github.com/Microsoft/vsts-vscode/issues",
+  "license": "SEE LICENSE IN LICENSE.txt",
+  "homepage": "https://github.com/Microsoft/vsts-vscode/blob/master/README.md",
+  "engines": {
+    "vscode": "^1.7.0"
+  },
+  "enableProposedApi": false,
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/src/extension",
+  "contributes": {
+    "menus": {
+      "explorer/context": [
+        {
+          "command" : "tfvc.Rename",
+          "group": "9_cutcopypaste",
+          "when": "scmProvider == tfvc"
+        }
+      ],
+      "scm/title": [
+        {
+          "command" : "team.AssociateWorkItems",
+          "group": "3_commit@4"
+        },
+        {
+          "command" : "tfvc.Checkin",
+          "group": "navigation@1",
+          "when": "scmProvider == tfvc"
+        },
+        {
+          "command" : "tfvc.Refresh",
+          "group": "navigation@2",
+          "when": "scmProvider == tfvc"
+        },
+        {
+          "command" : "tfvc.Sync",
+          "group": "1_sync@1",
+          "when": "scmProvider == tfvc"
+        },
+        {
+          "command" : "tfvc.Undo",
+          "group": "1_sync@2",
+          "when": "scmProvider == tfvc"
+        },
+        {
+          "command" : "tfvc.Checkin",
+          "group": "3_commit@3",
+          "when": "scmProvider == tfvc"
+        },
+
+        {
+          "command" : "tfvc.ShowOutput",
+          "group": "5_output",
+          "when": "scmProvider == tfvc"
+        }
+      ],
+      "scm/resource/context": [
+        {
+          "command": "tfvc.OpenDiff",
+          "when": "scmProvider == tfvc",
+          "group": "navigation@1"
+        },
+        {
+          "command": "tfvc.OpenFile",
+          "when": "scmProvider == tfvc",
+          "group": "navigation@2"
+        },
+        {
+          "command": "tfvc.Undo",
+          "when": "scmProvider == tfvc && scmResourceGroup != conflicts",
+          "group": "1_modification@1"
+        },
+        {
+          "command": "tfvc.Include",
+          "when": "scmProvider == tfvc && scmResourceGroup == excluded",
+          "group": "1_modification@2"
+        },
+        {
+          "command": "tfvc.Exclude",
+          "when": "scmProvider == tfvc && scmResourceGroup == included",
+          "group": "1_modification@2"
+        },
+        {
+          "command": "tfvc.ResolveTakeTheirs",
+          "when": "scmProvider == tfvc && scmResourceGroup == conflicts",
+          "group": "1_modification@1"
+        },
+        {
+          "command": "tfvc.ResolveKeepYours",
+          "when": "scmProvider == tfvc && scmResourceGroup == conflicts",
+          "group": "1_modification@2"
+        },
+        {
+          "command": "tfvc.Undo",
+          "when": "scmProvider == tfvc && scmResourceGroup != conflicts",
+          "group": "inline@1"
+        },
+        {
+          "command": "tfvc.Include",
+          "when": "scmProvider == tfvc && scmResourceGroup == excluded",
+          "group": "inline@2"
+        },
+        {
+          "command": "tfvc.Exclude",
+          "when": "scmProvider == tfvc && scmResourceGroup == included",
+          "group": "inline@2"
+        },
+        {
+          "command": "tfvc.ResolveTakeTheirs",
+          "when": "scmProvider == tfvc && scmResourceGroup == conflicts",
+          "group": "inline@1"
+        },
+        {
+          "command": "tfvc.ResolveKeepYours",
+          "when": "scmProvider == tfvc && scmResourceGroup == conflicts",
+          "group": "inline@2"
+        }
+      ]
+    },
+    "configuration": {
+      "type": "object",
+      "title": "Team Services extension options",
+      "properties": {
+        "team.appInsights.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enables Application Insights telemetry collection for the Team Services extension."
+        },
+        "team.logging.level": {
+          "type": "string",
+          "default": "",
+          "description": "Set the logging level for the extension (error, warn, info, verbose, debug)."
+        },
+        "team.pinnedQueries": {
+          "type": "array",
+          "default": [ { "account": "", "queryText": "", "queryPath": "" }],
+          "description": "Specify the account and either the queryText or queryPath of the query you'd like to monitor.  If specified, queryText is preferred over queryPath."
+        },
+        "team.pollingInterval": {
+          "type": "number",
+          "default": 5,
+          "description": "Specify the number of minutes to wait when polling for new builds and pull requests."
+        },
+        "team.remoteUrl": {
+          "type": "string",
+          "default": "",
+          "description": "Specify the url to a project collection to use when your source code repository is not hosted with Microsoft. Requires team.teamProject."
+        },
+        "team.teamProject": {
+          "type": "string",
+          "default": "",
+          "description": "Specify the team project to use when your source code repository is not hosted with Microsoft. Requires team.remoteUrl."
+        },
+        "team.buildDefinitionId": {
+          "type": "number",
+          "default": 0,
+          "description": "Specify the team project's build definition Id to monitor when your source code repository is not hosted with Microsoft. Requires both team.remoteUrl and team.teamProject."
+        },
+        "tfvc.location": {
+          "type": "string",
+          "default": "",
+          "description": "Specify the full path to the TF executable or script to use for TFVC functionality."
+        },
+        "tfvc.proxy": {
+          "type": "string",
+          "default": "",
+          "description": "Specify the full URL (ex. http://servername:9999/proxy) to the TFS proxy to use for TFVC functionality."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "team.AssociateWorkItems",
+        "title": "Associate Work Items",
+        "category": "Team"
+      },
+      {
+        "command": "team.OpenNewTask",
+        "title": "Create Task",
+        "category": "Team"
+      },
+      {
+        "command": "team.OpenNewBug",
+        "title": "Create Bug",
+        "category": "Team"
+      },
+      {
+        "command": "team.OpenFileHistory",
+        "title": "View History",
+        "category": "Team"
+      },
+      {
+        "command": "team.OpenBlamePage",
+        "title": "View Blame",
+        "category": "Team"
+      },
+      {
+        "command": "team.OpenNewPullRequest",
+        "title": "Create Pull Request",
+        "category": "Team"
+      },
+      {
+        "command": "team.OpenNewWorkItem",
+        "title": "Create Work Item",
+        "category": "Team"
+      },
+      {
+        "command": "team.GetPullRequests",
+        "title": "View Pull Requests",
+        "category": "Team"
+      },
+      {
+        "command": "team.OpenBuildSummaryPage",
+        "title": "View Build summary",
+        "category": "Team"
+      },
+      {
+        "command": "team.OpenTeamSite",
+        "title": "View Website",
+        "category": "Team"
+      },
+      {
+        "command": "team.ViewWorkItems",
+        "title": "View Work Items",
+        "category": "Team"
+      },
+      {
+        "command": "team.ViewWorkItemQueries",
+        "title": "View Work Item Queries",
+        "category": "Team"
+      },
+      {
+        "command": "team.SendFeedback",
+        "title": "Send Feedback",
+        "category": "Team"
+      },
+      {
+        "command": "team.Signin",
+        "title": "Signin",
+        "category": "Team"
+      },
+      {
+        "command": "team.Signout",
+        "title": "Signout",
+        "category": "Team"
+      },
+      {
+        "command": "tfvc.Checkin",
+        "title": "Checkin",
+        "category": "TFVC",
+        "icon": {
+          "light": "resources/icons/light/check.svg",
+          "dark": "resources/icons/dark/check.svg"
+        }
+      },
+      {
+        "command": "tfvc.Exclude",
+        "title": "Exclude",
+        "category": "TFVC",
+        "icon": {
+          "light": "resources/icons/light/unstage.svg",
+          "dark": "resources/icons/dark/unstage.svg"
+        }
+      },
+      {
+        "command": "tfvc.Include",
+        "title": "Include",
+        "category": "TFVC",
+        "icon": {
+          "light": "resources/icons/light/stage.svg",
+          "dark": "resources/icons/dark/stage.svg"
+        }
+      },
+      {
+        "command": "tfvc.OpenDiff",
+        "title": "Open Diff",
+        "category": "TFVC"
+      },
+      {
+        "command": "tfvc.OpenFile",
+        "title": "Open File",
+        "category": "TFVC"
+      },
+      {
+        "command": "tfvc.Rename",
+        "title": "Rename (TFVC)",
+        "category": "TFVC"
+      },
+      {
+        "command": "tfvc.ShowOutput",
+        "title": "Show TFVC Output",
+        "category": "TFVC"
+      },
+      {
+        "command": "tfvc.Refresh",
+        "title": "Refresh",
+        "category": "TFVC",
+        "icon": {
+          "light": "resources/icons/light/refresh.svg",
+          "dark": "resources/icons/dark/refresh.svg"
+        }
+      },
+      {
+        "command": "tfvc.ResolveKeepYours",
+        "title": "Resolve: Keep Yours",
+        "category": "TFVC",
+        "icon": {
+          "light": "resources/icons/light/resolve-keepyours.svg",
+          "dark": "resources/icons/dark/resolve-keepyours.svg"
+        }
+      },
+      {
+        "command": "tfvc.ResolveTakeTheirs",
+        "title": "Resolve: Take Theirs",
+        "category": "TFVC",
+        "icon": {
+          "light": "resources/icons/light/resolve-taketheirs.svg",
+          "dark": "resources/icons/dark/resolve-taketheirs.svg"
+        }
+      },
+      {
+        "command": "tfvc.Sync",
+        "title": "Sync",
+        "category": "TFVC"
+      },
+      {
+        "command": "tfvc.Undo",
+        "title": "Undo",
+        "category": "TFVC",
+        "icon": {
+          "light": "resources/icons/light/clean.svg",
+          "dark": "resources/icons/dark/clean.svg"
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -watch -p ./",
+    "postinstall": "node ./node_modules/vscode/bin/install"
+  },
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "del": "^2.2.0",
+    "gulp": "^3.9.0",
+    "gulp-istanbul": "^1.1.1",
+    "gulp-mocha": "^3.0.1",
+    "gulp-sourcemaps": "^2.4.0",
+    "gulp-tslint": "^3.2.0",
+    "gulp-typescript": "^3.1.4",
+    "gulp-util": "^3.0.7",
+    "mocha-junit-reporter": "^1.12.0",
+    "should": "^8.1.1",
+    "tslint": "^2.5.0",
+    "typescript": "^2.1.5",
+    "vscode": "^1.0.0",
+    "vsts-task-lib": "^0.9.18",
+    "yargs": "^5.0.0",
+    "@types/applicationinsights": "0.15.33",
+    "@types/chai": "^3.4.1",
+    "@types/mocha": "^2.2.32",
+    "@types/node": "^6.0.40",
+    "@types/node-uuid": "^6.0.26-alpha",
+    "@types/q": "^0.0.32",
+    "@types/winston": "^2.1.1",
+    "@types/xml2js": "^0.0.32"
+  },
+  "dependencies": {
+    "applicationinsights": "0.15.16",
+    "event-stream": "^3.3.2",
+    "fs": "0.0.2",
+    "git-repo-info": "^1.1.2",
+    "node-uuid": "^1.4.7",
+    "open": "0.0.5",
+    "opener": "^1.4.1",
+    "parse-git-config": "^0.3.1",
+    "path": "^0.12.7",
+    "readable-stream": "^2.1.4",
+    "underscore": "^1.8.3",
+    "url": "^0.11.0",
+    "vso-node-api": "^5.1.1",
+    "winston": "^2.1.1",
+    "xml2js": "^0.4.17"
+  }
+}
