@@ -506,7 +506,7 @@
     "should": "^8.1.1",
     "tslint": "^4.0.0",
     "typescript": "2.3.4",
-    "vscode": "^1.0.0",
+    "vscode": "^1.1.37",
     "vsts-task-lib": "^0.9.18",
     "yargs": "^5.0.0"
   },
